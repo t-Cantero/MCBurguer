@@ -221,8 +221,27 @@
     }
 
     function confirmarPedido() {
-    alert("llegué aquí");
-}
+        const items = Object.entries(carrito);
+        if (items.length === 0) return;
+
+        const total = Object.entries(carrito).reduce((acc, [id, cant]) => {
+            const p = productos.find(x => x.id == id);
+            return acc + p.precio * cant;
+        }, 0);
+
+        const resumen = items.map(([id, cant]) => {
+            const p = productos.find(x => x.id == id);
+            return `${p.emoji} ${p.nombre} x${cant} = ${(p.precio * cant).toFixed(2)}€`;
+        }).join("\n");
+
+        const mensaje = `🍔 NUEVO PEDIDO\n\n${resumen}\n\n💰 Total: ${total.toFixed(2)}€`;
+
+        if (tg && tg.sendData) {
+            tg.sendData(mensaje);
+        } else {
+            alert("Pedido:\n" + mensaje);
+        }
+    }
 
     renderMenu();
 </script>

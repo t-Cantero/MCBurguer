@@ -243,6 +243,7 @@
 
         if (tg && tg.sendData) {
             tg.sendData(JSON.stringify(data));
+            tg.close();
         } else {
             alert("No hay tg.sendData disponible");
         }

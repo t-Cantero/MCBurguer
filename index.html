@@ -1,294 +1,260 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MCBurguer</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCBurguer</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root {
+    --naranja: #FF6B00;
+    --naranja-claro: #FF8C38;
+    --fondo: #FFF8F0;
+    --texto: #1A1A1A;
+    --gris: #F0EBE3;
+    --blanco: #FFFFFF;
+    --sombra: 0 4px 15px rgba(255, 107, 0, 0.15);
+}
 
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-    <style>
-        :root {
-            --naranja: #FF6B00;
-            --naranja-claro: #FF8C38;
-            --fondo: #FFF8F0;
-            --texto: #1A1A1A;
-            --gris: #F0EBE3;
-            --blanco: #FFFFFF;
-            --sombra: 0 4px 15px rgba(255, 107, 0, 0.15);
-        }
+body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--fondo);
+    color: var(--texto);
+    min-height: 100vh;
+    padding-bottom: 100px;
+}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+.header {
+    background: linear-gradient(135deg, var(--naranja), var(--naranja-claro));
+    padding: 20px 16px 16px;
+    text-align: center;
+}
 
-        body {
-            font-family: 'Nunito', sans-serif;
-            background: var(--fondo);
-            color: var(--texto);
-            min-height: 100vh;
-            padding-bottom: 100px;
-        }
+.header h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 28px;
+    color: white;
+}
 
-        /* HEADER */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 16px;
+}
 
-        .header {
-            background: linear-gradient(135deg, var(--naranja), var(--naranja-claro));
-            padding: 20px 16px;
-            text-align: center;
-        }
+.producto {
+    background: white;
+    border-radius: 16px;
+    padding: 12px 8px;
+    text-align: center;
+    box-shadow: var(--sombra);
+}
 
-        .header h1 {
-            font-family: 'Fredoka One', cursive;
-            font-size: 28px;
-            color: white;
-        }
+.emoji { font-size: 40px; }
+.nombre { font-size: 12px; font-weight: 700; }
+.precio { color: var(--naranja); font-weight: 800; }
 
-        /* GRID PRODUCTOS */
+.btn-add {
+    background: var(--naranja);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 7px;
+    cursor: pointer;
+    width: 100%;
+}
 
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            padding: 16px;
-        }
+.carrito-bar {
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    background: var(--naranja);
+    color: white;
+    border-radius: 18px;
+    padding: 14px;
+    display: flex;
+    justify-content: space-between;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: 0.3s;
+}
 
-        .producto {
-            background: white;
-            border-radius: 16px;
-            padding: 12px 8px;
-            text-align: center;
-            box-shadow: var(--sombra);
-        }
+.carrito-bar.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
 
-        .emoji {
-            font-size: 40px;
-        }
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+}
 
-        .nombre {
-            font-size: 12px;
-            font-weight: 700;
-        }
+.modal-overlay.visible {
+    display: flex;
+    align-items: flex-end;
+}
 
-        .precio {
-            color: var(--naranja);
-            font-weight: 800;
-        }
+.modal {
+    background: white;
+    width: 100%;
+    padding: 20px;
+    border-radius: 20px 20px 0 0;
+}
 
-        .btn-add {
-            background: var(--naranja);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 7px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 6px;
-        }
+.btn-confirmar {
+    background: linear-gradient(135deg, var(--naranja), var(--naranja-claro));
+    color: white;
+    border: none;
+    padding: 14px;
+    width: 100%;
+    border-radius: 12px;
+    font-size: 18px;
+    cursor: pointer;
+}
 
-        /* CARRITO */
+/* 🔥 ANIMACIÓN PRO */
+.success {
+    position: fixed;
+    inset: 0;
+    background: white;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 999;
+}
 
-        .carrito-bar {
-            position: fixed;
-            bottom: 16px;
-            left: 16px;
-            right: 16px;
-            background: var(--naranja);
-            color: white;
-            border-radius: 18px;
-            padding: 14px;
-            display: flex;
-            justify-content: space-between;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: 0.3s;
-        }
+.check {
+    font-size: 70px;
+    color: var(--naranja);
+    animation: pop 0.4s ease;
+}
 
-        .carrito-bar.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
+.texto {
+    font-size: 22px;
+    margin-top: 10px;
+    font-weight: bold;
+}
 
-        /* MODAL */
-
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            display: none;
-        }
-
-        .modal-overlay.visible {
-            display: flex;
-            align-items: flex-end;
-        }
-
-        .modal {
-            background: white;
-            width: 100%;
-            padding: 20px;
-            border-radius: 20px 20px 0 0;
-        }
-
-        .btn-confirmar {
-            background: linear-gradient(135deg, var(--naranja), var(--naranja-claro));
-            color: white;
-            border: none;
-            padding: 14px;
-            width: 100%;
-            border-radius: 12px;
-            font-size: 18px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        /* 🔥 ANIMACIÓN PRO */
-
-        .success {
-            position: fixed;
-            inset: 0;
-            background: white;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            z-index: 999;
-        }
-
-        .check {
-            font-size: 70px;
-            color: var(--naranja);
-            animation: pop 0.4s ease;
-        }
-
-        .texto {
-            font-size: 22px;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-
-        @keyframes pop {
-            0% { transform: scale(0); }
-            80% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-    </style>
+@keyframes pop {
+    0% { transform: scale(0); }
+    80% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+</style>
 </head>
 
 <body>
 
-    <!-- HEADER -->
-    <div class="header">
-        <h1>🍔 MCBurguer</h1>
-    </div>
+<div class="header">
+    <h1>🍔 MCBurguer</h1>
+</div>
 
-    <!-- PRODUCTOS -->
-    <div class="menu-grid" id="menuGrid"></div>
+<div class="menu-grid" id="menuGrid"></div>
 
-    <!-- CARRITO -->
-    <div class="carrito-bar" id="carritoBar">
-        <span id="carritoTexto">0 productos</span>
-        <span id="carritoTotal">0€</span>
-    </div>
+<div class="carrito-bar" id="carritoBar">
+    <span id="carritoTexto">0 productos</span>
+    <span id="carritoTotal">0€</span>
+</div>
 
-    <!-- MODAL -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal">
-            <div id="modalContenido"></div>
-        </div>
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <div id="modalContenido"></div>
     </div>
+</div>
 
-    <!-- 🔥 OVERLAY CONFIRMACIÓN -->
-    <div id="successOverlay" class="success">
-        <div class="check">✔</div>
-        <div class="texto">Pedido confirmado</div>
-    </div>
+<!-- 🔥 OVERLAY DE CONFIRMACIÓN -->
+<div id="successOverlay" class="success">
+    <div class="check">✔</div>
+    <div class="texto">Pedido confirmado</div>
+</div>
 
 <script>
-    const tg = window.Telegram.WebApp;
+const tg = window.Telegram.WebApp;
+tg.ready();
+tg.expand();
 
-    tg.ready();
-    tg.expand();
+const productos = [
+    { id: 1, emoji: "🍔", nombre: "Hamburguesa", precio: 4.99 },
+    { id: 2, emoji: "🍟", nombre: "Patatas", precio: 1.49 },
+    { id: 3, emoji: "🌭", nombre: "Perrito", precio: 3.49 },
+    { id: 4, emoji: "🌮", nombre: "Taco", precio: 3.99 },
+    { id: 5, emoji: "🍕", nombre: "Pizza", precio: 7.99 },
+    { id: 6, emoji: "🍩", nombre: "Donut", precio: 1.49 },
+    { id: 7, emoji: "🍿", nombre: "Palomitas", precio: 1.99 },
+    { id: 8, emoji: "🥤", nombre: "Coca-Cola", precio: 1.99 },
+    { id: 9, emoji: "🍊", nombre: "Fanta", precio: 1.99 },
+    { id: 10, emoji: "🍰", nombre: "Tarta", precio: 2.99 },
+];
 
-    const productos = [
-        { id: 1, emoji: "🍔", nombre: "Hamburguesa", precio: 4.99 },
-        { id: 2, emoji: "🍟", nombre: "Patatas", precio: 1.49 },
-        { id: 3, emoji: "🌭", nombre: "Perrito", precio: 3.49 },
-        { id: 4, emoji: "🌮", nombre: "Taco", precio: 3.99 },
-        { id: 5, emoji: "🍕", nombre: "Pizza", precio: 7.99 },
-        { id: 6, emoji: "🍩", nombre: "Donut", precio: 1.49 },
-        { id: 7, emoji: "🍿", nombre: "Palomitas", precio: 1.99 },
-        { id: 8, emoji: "🥤", nombre: "Coca-Cola", precio: 1.99 },
-        { id: 9, emoji: "🍊", nombre: "Fanta", precio: 1.99 },
-        { id: 10, emoji: "🍰", nombre: "Tarta", precio: 2.99 }
-    ];
+const carrito = {};
 
-    const carrito = {};
+function renderMenu() {
+    const grid = document.getElementById("menuGrid");
+    grid.innerHTML = productos.map(p => `
+        <div class="producto">
+            <div class="emoji">${p.emoji}</div>
+            <div class="nombre">${p.nombre}</div>
+            <div class="precio">${p.precio.toFixed(2)}€</div>
+            <button class="btn-add" onclick="agregar(${p.id})">ADD</button>
+        </div>
+    `).join("");
+}
 
-    function renderMenu() {
-        const grid = document.getElementById("menuGrid");
+function agregar(id) {
+    carrito[id] = (carrito[id] || 0) + 1;
+    actualizarCarrito();
+}
 
-        grid.innerHTML = productos.map(p => `
-            <div class="producto">
-                <div class="emoji">${p.emoji}</div>
-                <div class="nombre">${p.nombre}</div>
-                <div class="precio">${p.precio.toFixed(2)}€</div>
-                <button class="btn-add" onclick="agregar(${p.id})">ADD</button>
-            </div>
-        `).join("");
-    }
+function actualizarCarrito() {
+    const totalItems = Object.values(carrito).reduce((a,b)=>a+b,0);
+    const total = Object.entries(carrito).reduce((acc,[id,c])=>{
+        const p = productos.find(x=>x.id==id);
+        return acc + p.precio*c;
+    },0);
 
-    function agregar(id) {
-        carrito[id] = (carrito[id] || 0) + 1;
-        actualizarCarrito();
-    }
+    document.getElementById("carritoTexto").textContent = totalItems+" productos";
+    document.getElementById("carritoTotal").textContent = total.toFixed(2)+"€";
 
-    function actualizarCarrito() {
-        const totalItems = Object.values(carrito).reduce((a, b) => a + b, 0);
+    document.getElementById("carritoBar").classList.toggle("visible", totalItems>0);
+}
 
-        const total = Object.entries(carrito).reduce((acc, [id, cant]) => {
-            const p = productos.find(x => x.id == id);
-            return acc + p.precio * cant;
-        }, 0);
+function confirmarPedido() {
+    const items = Object.entries(carrito);
+    if (!items.length) return;
 
-        document.getElementById("carritoTexto").textContent =
-            totalItems + " productos";
+    const pedido = items.map(([id,c])=>{
+        const p = productos.find(x=>x.id==id);
+        return { id:p.id, nombre:p.nombre, cantidad:c };
+    });
 
-        document.getElementById("carritoTotal").textContent =
-            total.toFixed(2) + "€";
+    // Enviar datos a Telegram
+    tg.sendData(JSON.stringify({ pedido }));
 
-        document.getElementById("carritoBar").classList.toggle("visible", totalItems > 0);
-    }
+    // Detectar versión
+    const version = tg.version.split('.').map(n => parseInt(n));
+    const major = version[0], minor = version[1];
 
-    function confirmarPedido() {
-        const items = Object.entries(carrito);
-        if (!items.length) return;
-
-        const pedido = items.map(([id, c]) => {
-            const p = productos.find(x => x.id == id);
-            return {
-                id: p.id,
-                nombre: p.nombre,
-                cantidad: c
-            };
-        });
-
-        tg.sendData(JSON.stringify({ pedido }));
-
-        // 🔥 mostrar animación
+    if (major>6 || (major===6 && minor>=2)) {
+        // si 6.2 o superior
+        tg.showAlert("Pedido enviado 🚀");
+        tg.close();
+    } else {
+        // si versión antigua, animación local
         document.getElementById("successOverlay").style.display = "flex";
-
-        // 🔥 cerrar después
-        setTimeout(() => {
-            tg.close();
-        }, 2000);
+        setTimeout(()=>tg.close(), 2000);
     }
+}
 
-    renderMenu();
+renderMenu();
 </script>
 
 </body>

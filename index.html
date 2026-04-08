@@ -223,34 +223,36 @@
     }
 
     function confirmarPedido() {
-        const items = Object.entries(carrito);
-        if (items.length === 0) return;
+    console.log("CLICK CONFIRMAR");
 
-        const pedido = items.map(([id, cant]) => {
-            const p = productos.find(x => x.id == id);
-            return {
-                id: p.id,
-                nombre: p.nombre,
-                emoji: p.emoji,
-                cantidad: cant,
-                subtotal: (p.precio * cant).toFixed(2)
-            };
-        });
+    const items = Object.entries(carrito);
+    if (items.length === 0) return;
 
-        const total = pedido.reduce((acc, item) => acc + parseFloat(item.subtotal), 0);
-
-        const data = {
-            pedido: pedido,
-            total: total.toFixed(2)
+    const pedido = items.map(([id, cant]) => {
+        const p = productos.find(x => x.id == id);
+        return {
+            id: p.id,
+            nombre: p.nombre,
+            emoji: p.emoji,
+            cantidad: cant,
+            subtotal: (p.precio * cant).toFixed(2)
         };
+    });
 
-        if (tg && tg.sendData) {
-            tg.sendData(JSON.stringify(data));
-            tg.close();
-        } else {
-            alert("No hay tg.sendData disponible");
-        }
-    }
+    const total = pedido.reduce((acc, item) => acc + parseFloat(item.subtotal), 0);
+
+    const data = {
+        pedido: pedido,
+        total: total.toFixed(2)
+    };
+
+    console.log("Enviando data:", JSON.stringify(data));
+
+    tg.sendData(JSON.stringify(data));
+
+    // 🔥 ESTO ES LO QUE TE FALTA O NO SE EJECUTA
+    tg.close();
+}
 
     renderMenu();
 </script>

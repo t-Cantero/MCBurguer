@@ -1,5 +1,6 @@
 import logging
 import json
+from importlib.util import source_hash
 
 from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
@@ -51,8 +52,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def pedido_recibido(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print(">>>>>PEDIDO RECIBIDO LLAMADO")
     if not update.message or not update.message.web_app_data:
+        print(">>> sin web_app_data")
         return
-
+    print(">>>>Data recibida", update.message.web_app_data.data)
     try:
         data = json.loads(update.message.web_app_data.data)
 
@@ -145,14 +147,16 @@ async def ver_pedidos(update: Update, context: ContextTypes.DEFAULT_TYPE):
         for i, pedido in enumerate(pedidos, 1):
             texto += f"  🧾 Pedido {i} - {pedido['total']}€\n"
     await update.message.reply_text(texto)
-
+async def debug_todo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    print(">>>>>Mensaje recibido:", update)
 app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(CommandHandler("help", help))
 app.add_handler(CommandHandler("start", start))
-app.add_handler(CommandHandler("historial",historial))
-app.add_handler(CommandHandler("admin",admin))
-app.add_handler(CommandHandler("pedidos",ver_pedidos))
+app.add_handler(CommandHandler("historial", historial))
+app.add_handler(CommandHandler("admin", admin))
+app.add_handler(CommandHandler("pedidos", ver_pedidos))
 app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, pedido_recibido))
+app.add_handler(MessageHandler(filters.ALL, debug_todo))
 
 print("BOT INICIADO...")
 app.run_polling()

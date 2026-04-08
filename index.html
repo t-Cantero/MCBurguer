@@ -242,10 +242,14 @@
         total: total.toFixed(2)
     };
 
+    console.log("tg:", tg);
+    console.log("tg.sendData:", tg?.sendData);
+    console.log("Enviando data:", JSON.stringify(data));
+
     if (tg && tg.sendData) {
         tg.sendData(JSON.stringify(data));
     } else {
-        alert("Pedido:\n" + JSON.stringify(data, null, 2));
+        alert("No hay tg.sendData disponible");
     }
 }
 
